@@ -1,49 +1,31 @@
 pipeline {
-    agent any 
+    agent any
     stages {
-        stage('Build') { 
+        stage('Build') {
             steps {
-                bat 'python -m py_compile sources/add2vals.py sources/calc.py' 
-                stash(name: 'compiled-results', includes: 'sources/*.py*') 
+                echo 'Building...'
+                bat 'python -m py_compile sources/add2vals.py sources/calc.py'
             }
         }
-	stage('Setup') {
-		steps {
-			bat 'pip install pytest pyinstaller'
-		}
-	}
-	stage('Test') {
+        stage('Setup') {
             steps {
+                echo 'Setting up...'
+                bat 'pip install pytest pyinstaller'
+            }
+        }
+        stage('Test') {
+            steps {
+                echo 'Running tests...'
                 bat 'py.test --junit-xml test-reports/results.xml sources/test_calc.py'
-            }
-            post {
-                always {
-                    junit 'test-reports/results.xml'
-                }
+                junit 'test-reports/results.xml'
             }
         }
-	stage('Deliver') {
+        stage('Deliver') {
             steps {
-				// Create the directory if it doesn't exist
-				bat 'if not exist dist\\add2vals mkdir dist\\add2vals'
-				
-                bat "pyinstaller --onefile sources/add2vals.py"
-            }
-	stage('Archive Artifacts') {
-            steps {
-                script {
-                    if (fileExists('dist/add2vals/add2vals.exe')) {
-                        archiveArtifacts artifacts: 'dist/add2vals/**/*', fingerprint: true
-                    } else {
-                        error('Artifact not found: dist/add2vals/add2vals.exe')
-                    }
-                }
-            }
-        }		
-            post {
-                success {
-                    archiveArtifacts 'dist/add2vals'
-                }
+                echo 'Delivering...'
+                bat 'if not exist dist\\add2vals mkdir dist\\add2vals'
+                bat 'pyinstaller --onefile sources/add2vals.py'
+                archiveArtifacts artifacts: 'dist/**', fingerprint: true
             }
         }
     }

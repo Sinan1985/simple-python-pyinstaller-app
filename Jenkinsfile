@@ -11,7 +11,12 @@ pipeline {
 		steps {
 			bat 'pip install pytest'
 		}
-}
+	}
+	stage('Setup') {
+		steps {
+			bat 'pip install pyinstaller'
+		}
+	}
 	stage('Test') {
             steps {
                 bat 'py.test --junit-xml test-reports/results.xml sources/test_calc.py'

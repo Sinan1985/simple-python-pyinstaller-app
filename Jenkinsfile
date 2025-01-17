@@ -9,12 +9,7 @@ pipeline {
         }
 	stage('Setup') {
 		steps {
-			bat 'pip install pytest'
-		}
-	}
-	stage('Setup2') {
-		steps {
-			bat 'pip install pyinstaller'
+			bat 'pip install pytest pyinstaller'
 		}
 	}
 	stage('Test') {
@@ -29,6 +24,9 @@ pipeline {
         }
 	stage('Deliver') {
             steps {
+				// Create the directory if it doesn't exist
+				bat 'if not exist dist\\add2vals mkdir dist\\add2vals'
+				
                 bat "pyinstaller --onefile sources/add2vals.py"
             }
             post {

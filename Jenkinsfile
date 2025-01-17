@@ -12,7 +12,7 @@ pipeline {
 			bat 'pip install pytest'
 		}
 	}
-	stage('Setup') {
+	stage('Setup2') {
 		steps {
 			bat 'pip install pyinstaller'
 		}

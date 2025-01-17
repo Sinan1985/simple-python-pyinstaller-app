@@ -29,6 +29,17 @@ pipeline {
 				
                 bat "pyinstaller --onefile sources/add2vals.py"
             }
+	stage('Archive Artifacts') {
+            steps {
+                script {
+                    if (fileExists('dist/add2vals/add2vals.exe')) {
+                        archiveArtifacts artifacts: 'dist/add2vals/**/*', fingerprint: true
+                    } else {
+                        error('Artifact not found: dist/add2vals/add2vals.exe')
+                    }
+                }
+            }
+        }		
             post {
                 success {
                     archiveArtifacts 'dist/add2vals'
